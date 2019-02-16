@@ -27,13 +27,12 @@ class Student
     DB[:conn].execute(sql)
   end
   def save
-    if self.id == nil
-      DB[:conn].execute("INSERT INTO students (name, grade) VALUES (?, ?)", self.name, self.grade)
+    if self.id
+      self.update
     else
-      DB[:conn].execute("UPDATE students SET name = ?, grade = ? WHERE id = ?", self.name, self.grade, self.id)
+      DB[:conn].execute("INSERT INTO students (name, grade) VALUES (?, ?)", self.name, self.grade)
+      self.id = DB[:conn].execute("SELECT id FROM students WHERE id = (SELECT MAX(id) FROM students)")[0][0]
     end
-    self.id = DB[:conn].execute("SELECT id FROM students WHERE id = (SELECT MAX(id) FROM students)")[0][0]
-    self
   end
   def self.create(name, grade)
     student = Student.new(name, grade)
@@ -48,6 +47,6 @@ class Student
     Student.new_from_db(row)
   end
   def update
-    self.save
+    DB[:conn].execute("UPDATE students SET name = ?, grade = ? WHERE id = ?", self.name, self.grade, self.id)
   end
 end
