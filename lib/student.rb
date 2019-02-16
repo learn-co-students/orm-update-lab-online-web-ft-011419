@@ -17,7 +17,7 @@ class Student
     CREATE TABLE students (
     id INTEGER PRIMARY KEY,
     name TEXT,
-    grade INTEGER
+    grade TEXT
     )
     SQL
 
@@ -53,7 +53,7 @@ class Student
   end
 
 
-  def self.create(name:, grade:)
+  def self.create(name, grade)
     student = Student.new(name, grade)
     student.save
     student
@@ -71,10 +71,11 @@ class Student
     SELECT *
     FROM students
     WHERE name = ?
+    LIMIT 1
     SQL
 
     DB[:conn].execute(sql,name).map do |row|
-    self.new_from_db(row).first
-    end
+      self.new_from_db(row)
+    end.first
   end
 end
