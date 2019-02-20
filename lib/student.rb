@@ -42,13 +42,8 @@ class Student
       end
 
       def self.create(name, grade)
-
-          sql = <<-SQL
-            INSERT INTO students (name, grade)
-            VALUES (?, ?)
-          SQL
-          DB[:conn].execute(sql, self.name, self.grade)
-          @id = DB[:conn].execute("SELECT last_insert_rowid() FROM students")[0][0]
+        student = Student.new(name, grade)
+        student.save
       end
 
     def update
@@ -57,11 +52,12 @@ class Student
     end
 
     def self.new_from_db(row)
-      new_student = self.new  # self.new is the same as running Song.new
-      new_student.id = row[0]
-      new_student.name =  row[1]
-      new_student.grade = row[2]
-      new_student  # return the newly created instance
+
+      id = row[0]
+      name =  row[1]
+      grade = row[2]
+      self.new(id, name, grade)
+      
     end
 
     def self.find_by_name(name)
